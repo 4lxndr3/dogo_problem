@@ -2,10 +2,36 @@ import pygame
 from cores import PRETO, BRANCO, VERMELHO, AZUL, CINZA_ESCURO, minha_fonte
 import sys
 
-from funcoes import definir_obstaculos_aleatorios
 # Largura e altura da janela do pygame
 largura_janela, altura_janela = 800, 600
 
+
+def imprimir_sem_saida(janela):
+    # Crie uma fonte para exibir o texto
+    fonte = pygame.font.Font(minha_fonte, 36)
+
+    # Crie o texto
+    texto = fonte.render("O dogo está sem saída ", True, BRANCO)
+
+    # Obtenha as coordenadas para centralizar o texto na janela
+    x_texto = (largura_janela - texto.get_width()) // 2
+    y_texto = (altura_janela - texto.get_height()) // 2
+
+    # Loop principal
+    while True:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        # Preencha a janela com a cor de fundo
+        janela.fill(PRETO)
+
+        # Desenhe o texto no centro da janela
+        janela.blit(texto, (x_texto, y_texto))
+
+        # Atualize a tela
+        pygame.display.flip()
 
 # Função para permitir ao usuário escolher entre os modos de jogo: manual ou automático
 def escolher_modo():
@@ -279,13 +305,5 @@ def configurar_largura_altura():
 
 
 # Função para configurar os obstáculos do salão de acordo com a escolha do usuário
-def configurar_obstaculos(janela, largura_salao, altura_salao):
-    quantidade_obstaculos = 3
-    obs = definir_obstaculos_aleatorios(largura_salao, altura_salao, quantidade_obstaculos)
-    modo_obstaculo = escolher_modo_obstaculo()
-    if modo_obstaculo == 'automatico':
-        obs = definir_obstaculos_aleatorios(largura_salao, altura_salao, quantidade_obstaculos)
-    else:
-        obs = escolher_posicao_obstaculo(janela, largura_salao, altura_salao)
 
-    return obs
+

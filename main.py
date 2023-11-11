@@ -57,7 +57,6 @@ def modo_manual():
     mensagem_game_over = False
     mensagem_good_job = False
     rodando = True
-
     while rodando:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -75,7 +74,7 @@ def modo_manual():
 
                 # Verifica as condições para o fim do jogo e exibe as mensagens correspondentes.
                 if not mensagem_game_over and not mensagem_good_job:
-                    if salao.is_valid(cachorro.x, cachorro.y) and not salao.obstaculos[cachorro.y][cachorro.x]:
+                    if salao.valido(cachorro.x, cachorro.y) and not salao.obstaculos[cachorro.y][cachorro.x]:
                         if not calcular_distancia_obstaculo(cachorro.x, cachorro.y, salao.obstaculos):
                             cachorro.mover_para(cachorro)
                         else:

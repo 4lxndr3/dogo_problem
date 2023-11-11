@@ -1,17 +1,24 @@
 import heapq
 
 
-# Classe que representa um estado no grid (coordenadas x, y).
 class Estado:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.custo = 0
 
-    # Comparar estados durante a ordenação na fila de prioridade.
     def __lt__(self, other):
-        return False
+        # Corrigido para ordenar com base no custo
+        return self.custo < other.custo
 
-    # Mover o estado para um destino.
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    # Método para mover o dogo no modo manual
+    # calculo é feito para mover apenas uma celula do salao na direção desejada
     def mover_para(self, destino):
         dx = destino.x - self.x
         dy = destino.y - self.y
@@ -21,35 +28,57 @@ class Estado:
             self.y += dy // abs(dy)
 
 
-# Função de busca A* para encontrar o caminho mais curto de um ponto de início para um ponto de objetivo no grid.
-# Retorna uma lista de estados representando o caminho do início ao objetivo, ou None se nenhum caminho é encontrado.
+# Função para reconstruir o caminho a partir do estado objetivo
+def reconstruir_caminho(caminho, objetivo):
+    estado = objetivo
+    caminho_final = [estado]
+    while estado in caminho and caminho[estado] is not None:
+        estado = caminho[estado]
+        caminho_final.append(estado)
+
+    return list(reversed(caminho_final))
+
+
+# Algoritmo A* para encontrar o caminho no salão
 def a_star(salao, inicio, objetivo):
-    agenda = []  # Fila de prioridade para estados a serem explorados
+    # Inicializa a heap (fila de prioridade) com o estado inicial
+    agenda = []
     heapq.heappush(agenda, (0, inicio))
+
+    # Conjunto para rastrear estados já visitados
     estados_passados = set()
+    custo_acumulado = {inicio: 0}
     caminho = {}
 
     while agenda:
-        _, estado = heapq.heappop(agenda)  # Obtém o estado com o menor custo da fila
+        # Extrai o estado com a menor prioridade (menor custo acumulado) da heap
+        _, estado = heapq.heappop(agenda)
 
+        # Verifica se o estado atual é o objetivo após a expansão dos vizinhos
         if estado.x == objetivo.x and estado.y == objetivo.y:
-            seguir_caminho = []
-            while estado:
-                seguir_caminho.append(estado)
-                estado = caminho.get(estado)
-            return list(reversed(seguir_caminho))  # Inverte a lista para obter o caminho correto
+            seguir_caminho = reconstruir_caminho(caminho, estado)
+            # Esvazia a heap após atingir o objetivo
+            heapq.heappop(agenda)
+            return seguir_caminho
 
-        # Gera estados adjacentes ao estado atual
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
             x, y = estado.x + dx, estado.y + dy
             proximo_estado = Estado(x, y)
 
-            # Verifica se o próximo estado é válido e ainda não foi explorado
-            if salao.is_valid(x, y) and proximo_estado not in estados_passados:
-                custo = salao.custo_total(proximo_estado, objetivo)
-                heapq.heappush(agenda,
-                               (custo, proximo_estado))
-                estados_passados.add(proximo_estado)
-                caminho[proximo_estado] = estado
+            # Verifica se o próximo estado é válido e ainda não foi visitado
+            if salao.valido(x, y) and proximo_estado not in estados_passados:
+                # Calcula o novo custo acumulado
+                novo_custo = custo_acumulado[estado] + salao.custo_total(estado, proximo_estado)
 
-    return None  # Retorna None se nenhum caminho for encontrado
+                # Verifica se o novo custo é menor do que o custo acumulado atual
+                if proximo_estado not in custo_acumulado or novo_custo < custo_acumulado[proximo_estado]:
+                    # Atualiza o custo acumulado e a prioridade na heap
+                    custo_acumulado[proximo_estado] = novo_custo
+                    prioridade = novo_custo + salao.heuristica(proximo_estado, objetivo)
+                    heapq.heappush(agenda, (prioridade, proximo_estado))
+
+                    # Adiciona o próximo estado aos estados visitados e atualiza o caminho
+                    estados_passados.add(proximo_estado)
+                    caminho[proximo_estado] = estado
+
+    return None
