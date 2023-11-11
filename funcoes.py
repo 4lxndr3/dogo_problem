@@ -2,6 +2,18 @@ import random
 import pygame
 from astar import a_star
 from cores import PRETO, VERMELHO, AZUL, BRANCO, minha_fonte
+from telas import escolher_modo_obstaculo, escolher_posicao_obstaculo, imprimir_sem_saida
+
+
+def configurar_obstaculos(janela, largura_salao, altura_salao):
+    quantidade_obstaculos = 3
+    modo_obstaculo = escolher_modo_obstaculo()
+    if modo_obstaculo == 'automatico':
+        obs = definir_obstaculos_aleatorios(largura_salao, altura_salao, quantidade_obstaculos)
+    else:
+        obs = escolher_posicao_obstaculo(janela, largura_salao, altura_salao)
+
+    return obs
 
 
 # Função para definir obstáculos aleatórios no grid do salão.
@@ -25,7 +37,8 @@ def definir_obstaculos_aleatorios(largura, altura, quantidade_obstaculos):
 def encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos,
                       VERMELHO_CLARO):
     caminho = a_star(salao, inicio, objetivo)
-
+    if not caminho:
+        imprimir_sem_saida(janela)
     if caminho:
         desenhar_caminho(janela, caminho, tamanho_celula)
     pintar_obstaculos_adjacentes(salao, obstaculos, VERMELHO_CLARO, janela, tamanho_celula)
@@ -72,7 +85,7 @@ def pintar_obstaculos_adjacentes(salao, obstaculos, cor, janela, tamanho_celula)
 def desenhar_salao(janela, salao, tamanho_celula):
     for y in range(salao.largura):
         for x in range(salao.altura):
-            cor = PRETO if salao.is_valid(x, y) else VERMELHO
+            cor = PRETO if salao.valido(x, y) else VERMELHO
             pygame.draw.rect(janela, cor,
                              (x * tamanho_celula[0], y * tamanho_celula[1], tamanho_celula[0], tamanho_celula[1]), 0)
 
