@@ -32,5 +32,5 @@ class Salao:
     def heuristica(self, estado, objetivo):
         dx = abs(estado.x - objetivo.x)
         dy = abs(estado.y - objetivo.y)
-        return dx + dy + 2 * min(dx, dy)
+        return dx + dy + 3 * min(dx, dy)
 

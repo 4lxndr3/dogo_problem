@@ -51,8 +51,17 @@ class FilaPrioridade:
 
     # Obtém o item com a maior prioridade da fila de prioridade
     def obter(self):
-        # Ordena os elementos com base na prioridade e retorna o primeiro elemento (o de maior prioridade)
-        self.elementos.sort(key=lambda x: x[0])
+        # Implementação do selection sort
+        n = len(self.elementos)
+        for i in range(n):
+            menor_indice = i
+            for j in range(i + 1, n):
+                if self.elementos[j][0] < self.elementos[menor_indice][0]:
+                    menor_indice = j
+
+            # Swap os elementos
+            self.elementos[i], self.elementos[menor_indice] = self.elementos[menor_indice], self.elementos[i]
+
         return self.elementos.pop(0) if self.elementos else None
 
     # Esvazia a lista de elementos
