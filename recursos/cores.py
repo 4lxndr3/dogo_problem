@@ -5,4 +5,4 @@ VERMELHO = (255, 30, 18)
 VERMELHO_CLARO = (251, 83, 74)
 CINZA_ESCURO = (50, 59, 77)
 
-minha_fonte = 'Diary of an 8-bit mage.otf'
+minha_fonte = 'recursos/Diary of an 8-bit mage.otf'
