@@ -6,8 +6,8 @@ import pygame
 
 def configurar_obstaculos(janela, largura_salao, altura_salao):
     
-    min_obstaculos = 20
-    max_obstaculos = 50
+    min_obstaculos = 1
+    max_obstaculos = 3
     quantidade_obstaculos = random.randint(min_obstaculos, max_obstaculos)
     
     modo_obstaculo = escolher_modo_obstaculo()
@@ -77,8 +77,13 @@ def pintar_obstaculos_adjacentes(salao, obstaculos, cor, janela, tamanho_celula)
     for y in range(salao.altura):
         for x in range(salao.largura):
             if obstaculos[y][x]:
-                pygame.draw.rect(janela, cor,
-                                 (x * tamanho_celula[0], y * tamanho_celula[1], tamanho_celula[0], tamanho_celula[1]))
+                for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1),
+                               (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                    new_x, new_y = x + dx, y + dy
+                    if 0 <= new_x < salao.largura and 0 <= new_y < salao.altura and not obstaculos[new_y][new_x]:
+                        pygame.draw.rect(janela, cor,
+                                         (new_x * tamanho_celula[0], new_y * tamanho_celula[1], tamanho_celula[0],
+                                          tamanho_celula[1]), 0)
 
 # Função para desenhar as células do grid.
 def desenhar_salao(janela, salao, tamanho_celula, imagem_fundo):

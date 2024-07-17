@@ -45,14 +45,16 @@ def modo_automatico():
             if evento.type == pygame.QUIT:
                 rodando = False
 
+        # Desenha a imagem de fundo
+        janela.blit(imagem_fundo, (0, 0))
+
         # Desenha o salão, obstáculos, caminho encontrado, cachorro, osso e a legenda
         desenhar_salao(janela, salao, tamanho_celula, imagem_fundo)
         desenhar_obstaculos(janela, salao, tamanho_celula)
-        encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos, VERMELHO_CLARO)
+        pintar_obstaculos_adjacentes(salao, obstaculos, VERMELHO, janela, tamanho_celula)
+        encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos,
+                          VERMELHO_CLARO)
         desenhar_legenda(largura_salao, altura_salao, janela, tamanho_celula, BRANCO)
-        janela.blit(icone_cachorro, (inicio.x * tamanho_celula[0] + 10, inicio.y * tamanho_celula[1] + 10))
-        janela.blit(icone_osso, (objetivo.x * tamanho_celula[0] + 10, objetivo.y * tamanho_celula[1] + 10))
-
         pygame.display.flip()
 
     pygame.quit()
@@ -73,22 +75,28 @@ def modo_manual():
             elif evento.type == pygame.KEYDOWN:
                 # Movimenta o cachorro nas direções correspondentes às teclas de seta
                 if evento.key == pygame.K_UP:
-                    proximo_estado = Estado(cachorro.x, cachorro.y - 1)
+                    cachorro.mover_para(Estado(cachorro.x, cachorro.y - 1))
                 elif evento.key == pygame.K_DOWN:
-                    proximo_estado = Estado(cachorro.x, cachorro.y + 1)
+                    cachorro.mover_para(Estado(cachorro.x, cachorro.y + 1))
                 elif evento.key == pygame.K_LEFT:
-                    proximo_estado = Estado(cachorro.x - 1, cachorro.y)
+                    cachorro.mover_para(Estado(cachorro.x - 1, cachorro.y))
                 elif evento.key == pygame.K_RIGHT:
-                    proximo_estado = Estado(cachorro.x + 1, cachorro.y)
+                    cachorro.mover_para(Estado(cachorro.x + 1, cachorro.y))
 
-                # Verifica se o próximo estado é válido e não é um obstáculo
-                if salao.valido(proximo_estado.x, proximo_estado.y) and not salao.obstaculos[proximo_estado.y][proximo_estado.x]:
-                    cachorro.mover_para(proximo_estado)
-                else:
-                    mensagem_game_over = True
+                # Feedback visual ao mover o cachorro
+                pygame.draw.circle(janela, AZUL, (cachorro.x * tamanho_celula[0] + tamanho_celula[0] // 2, cachorro.y * tamanho_celula[1] + tamanho_celula[1] // 2), 5)
 
-                # Verifica se o cachorro alcançou o objetivo
-                if cachorro.x == objetivo.x and cachorro.y == objetivo.y:
+                # Verifica as condições para o fim do jogo e exibe as mensagens correspondentes
+                if not mensagem_game_over and not mensagem_good_job:
+                    if salao.valido(cachorro.x, cachorro.y) and not salao.obstaculos[cachorro.y][cachorro.x]:
+                        if not calcular_distancia_obstaculo(cachorro.x, cachorro.y, salao.obstaculos):
+                            cachorro.mover_para(cachorro)
+                        else:
+                            mensagem_game_over = True
+                    else:
+                        mensagem_game_over = True
+
+                if not mensagem_game_over and not mensagem_good_job and cachorro.x == objetivo.x and cachorro.y == objetivo.y:
                     mensagem_good_job = True
 
                 if evento.key == pygame.K_ESCAPE:
@@ -98,18 +106,17 @@ def modo_manual():
         janela.blit(imagem_fundo, (0, 0))
         desenhar_salao(janela, salao, tamanho_celula, imagem_fundo)
         desenhar_obstaculos(janela, salao, tamanho_celula)
+        pintar_obstaculos_adjacentes(salao, salao.obstaculos, VERMELHO, janela, tamanho_celula)
         desenhar_legenda(largura_salao, altura_salao, janela, tamanho_celula, BRANCO)
         janela.blit(icone_cachorro, (cachorro.x * tamanho_celula[0] + 10, cachorro.y * tamanho_celula[1] + 10))
         janela.blit(icone_osso, (objetivo.x * tamanho_celula[0] + 10, objetivo.y * tamanho_celula[1] + 10))
 
-        # Exibe mensagens de vitória
-        if mensagem_good_job:
-            mostrar_mensagem("Good Job!", BRANCO, (largura // 2, altura // 2), janela)
-            mostrar_mensagem("Aperte Esc para sair", AZUL, (largura // 2, altura // 1.5), janela)
-
-        # Exibe mensagem de game over se houver colisão com obstáculo
+        # Exibe mensagens de vitória ou derrota
         if mensagem_game_over:
             mostrar_mensagem("Game Over", VERMELHO, (largura // 2, altura // 2), janela)
+            mostrar_mensagem("Aperte Esc para sair", AZUL, (largura // 2, altura // 1.5), janela)
+        elif mensagem_good_job:
+            mostrar_mensagem("Good Job!", BRANCO, (largura // 2, altura // 2), janela)
             mostrar_mensagem("Aperte Esc para sair", AZUL, (largura // 2, altura // 1.5), janela)
 
         pygame.display.flip()
@@ -118,7 +125,6 @@ def modo_manual():
         pygame.time.wait(100)
 
     pygame.quit()
-
 
 
 if __name__ == "__main__":
