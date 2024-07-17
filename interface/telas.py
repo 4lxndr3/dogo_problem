@@ -1,17 +1,16 @@
 import pygame
-from recursos import cores
+from recursos.cores import PRETO, BRANCO, VERMELHO, AZUL, CINZA_ESCURO, minha_fonte
 import sys
 
 # Largura e altura da janela do pygame
 largura_janela, altura_janela = 800, 600
 
-
 def imprimir_sem_saida(janela):
     # Crie uma fonte para exibir o texto
-    fonte = pygame.font.Font(cores.minha_fonte, 36)
+    fonte = pygame.font.Font(minha_fonte, 36)
 
     # Crie o texto
-    texto = fonte.render("O dogo está sem saída ", True, cores.BRANCO)
+    texto = fonte.render("O dogo está sem saída", True, BRANCO)
 
     # Obtenha as coordenadas para centralizar o texto na janela
     x_texto = (largura_janela - texto.get_width()) // 2
@@ -23,9 +22,6 @@ def imprimir_sem_saida(janela):
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
-        # Preencha a janela com a cor de fundo
-        janela.fill(cores.PRETO)
 
         # Desenhe o texto no centro da janela
         janela.blit(texto, (x_texto, y_texto))
@@ -39,10 +35,10 @@ def escolher_modo():
 
     janela_obs = pygame.display.set_mode((largura_janela, altura_janela))
     pygame.display.set_caption("Escolher Modo")
-    fonte = pygame.font.Font(cores.minha_fonte, 24)
-    texto_opcao = fonte.render("Clique na opção:", True, cores.CINZA_ESCURO)
-    texto_manual = fonte.render("Modo Manual", True, cores.BRANCO)
-    texto_automatico = fonte.render("Modo Automático", True, cores.BRANCO)
+    fonte = pygame.font.Font(minha_fonte, 24)
+    texto_opcao = fonte.render("Clique na opção:", True, CINZA_ESCURO)
+    texto_manual = fonte.render("Modo Manual", True, BRANCO)
+    texto_automatico = fonte.render("Modo Automático", True, BRANCO)
 
     largura_texto_manual, altura_texto_manual = texto_manual.get_size()
     largura_texto_automatico, altura_texto_automatico = texto_automatico.get_size()
@@ -72,7 +68,7 @@ def escolher_modo():
                     modo = "automatico"
                     rodando = False
 
-        janela_obs.fill(cores.PRETO)
+        janela_obs.fill(PRETO)
         janela_obs.blit(texto_opcao, (posicao_x_manual - 20, posicao_y_manual - 45))
         janela_obs.blit(texto_manual, (posicao_x_manual, posicao_y_manual))
         janela_obs.blit(texto_automatico, (posicao_x_automatico, posicao_y_automatico))
@@ -89,11 +85,10 @@ def obter_dimensoes_jogo():
     pygame.display.set_caption("Escolha as Dimensões do Jogo")
     entrada_largura = ""
     entrada_altura = ""
-    fonte = pygame.font.Font(cores.minha_fonte, 24)
-    cor_texto = pygame.Color(cores.BRANCO)
+    fonte = pygame.font.Font(minha_fonte, 24)
+    cor_texto = pygame.Color(BRANCO)
 
     while True:
-        janela.fill(pygame.Color(cores.PRETO))
         texto_largura = fonte.render("Digite a dimensão da sala LxL: " + entrada_largura, True, cor_texto)
         texto_rect = texto_largura.get_rect(center=(largura_janela // 2, altura_janela // 2))
         janela.blit(texto_largura, texto_rect)
@@ -132,13 +127,13 @@ def escolher_modo_dimensao():
     pygame.init()
     janela = pygame.display.set_mode((largura_janela, altura_janela))
     pygame.display.set_caption("Escolha as Dimensões do Jogo")
-    fonte = pygame.font.Font(cores.minha_fonte, 24)
-    cor_texto = pygame.Color(cores.BRANCO)
+    fonte = pygame.font.Font(minha_fonte, 24)
+    cor_texto = pygame.Color(BRANCO)
     texto_pergunta = fonte.render("Você quer escolher as dimensões do jogo? "
                                   "(s/n)", True, cor_texto)
     texto_rect = texto_pergunta.get_rect(center=(largura_janela // 2, altura_janela // 2))
     while True:
-        janela.fill(pygame.Color(cores.PRETO))
+        janela.fill(pygame.Color(PRETO))
         janela.blit(texto_pergunta, texto_rect)
         pygame.display.flip()
 
@@ -161,10 +156,10 @@ def escolher_modo_obstaculo():
 
     janela = pygame.display.set_mode((largura_janela, altura_janela))
     pygame.display.set_caption("Escolher Modo")
-    fonte = pygame.font.Font(cores.minha_fonte, 24)
-    texto_opcao = fonte.render("Clique na opção:", True, cores.CINZA_ESCURO)
-    texto_manual = fonte.render("Escolher obstáculos", True, cores.BRANCO)
-    texto_automatico = fonte.render("Gerar obstáculos", True, cores.BRANCO)
+    fonte = pygame.font.Font(minha_fonte, 24)
+    texto_opcao = fonte.render("Clique na opção:", True, CINZA_ESCURO)
+    texto_manual = fonte.render("Escolher obstáculos", True, BRANCO)
+    texto_automatico = fonte.render("Gerar obstáculos", True, BRANCO)
 
     largura_texto_manual, altura_texto_manual = texto_manual.get_size()
     largura_texto_automatico, altura_texto_automatico = texto_automatico.get_size()
@@ -194,7 +189,7 @@ def escolher_modo_obstaculo():
                     modo = "automatico"
                     rodando = False
 
-        janela.fill(cores.PRETO)
+        janela.fill(PRETO)
         janela.blit(texto_opcao, (posicao_x_manual + 35, posicao_y_manual - 50))
         janela.blit(texto_manual, (posicao_x_manual, posicao_y_manual))
         janela.blit(texto_automatico, (posicao_x_automatico, posicao_y_automatico))
@@ -212,17 +207,17 @@ def criar_sala(largura, altura):
 # Função para escolher as posições dos obstáculos manualmente
 def escolher_posicao_obstaculo(janela, largura_salao, altura_salao):
     obstaculos = [[False for _ in range(largura_salao)] for _ in range(altura_salao)]
-    sala = criar_sala(800, 600)
+    sala = criar_sala(largura_janela // 50, altura_janela // 50)
     lista_obstaculos = []
     tamanho_celula_obs = 50
     pygame.display.set_caption("Definir Obstáculos")
 
     # Renderiza a mensagem inicial na tela
-    fonte_tutorial = pygame.font.Font(cores.minha_fonte, 20)
+    fonte_tutorial = pygame.font.Font(minha_fonte, 20)
     texto_tutorial1 = fonte_tutorial.render("Para escolher a posição do obstáculo, clique na célula referente.", True,
-                                            cores.BRANCO)
-    texto_tutorial2 = fonte_tutorial.render("Após escolher, clique em ENTER para salvar.", True, cores.BRANCO)
-    texto_tutorial3 = fonte_tutorial.render("Clique em ESPAÇO para pular este tutorial.", True, cores.CINZA_ESCURO)
+                                            BRANCO)
+    texto_tutorial2 = fonte_tutorial.render("Após escolher, clique em ENTER para salvar.", True, BRANCO)
+    texto_tutorial3 = fonte_tutorial.render("Clique em ESPAÇO para pular este tutorial.", True, CINZA_ESCURO)
 
     largura_texto1, altura_texto1 = texto_tutorial1.get_size()
     largura_texto2, altura_texto2 = texto_tutorial2.get_size()
@@ -237,8 +232,7 @@ def escolher_posicao_obstaculo(janela, largura_salao, altura_salao):
 
     x_texto3 = (largura_tela - largura_texto3) // 2
     y_texto3 = y_texto2 + altura_texto2 + 50
-
-    janela.fill(cores.PRETO)
+    
     janela.blit(texto_tutorial1, (x_texto1, y_texto1))
     janela.blit(texto_tutorial2, (x_texto2, y_texto2))
     janela.blit(texto_tutorial3, (x_texto3, y_texto3))
@@ -268,12 +262,10 @@ def escolher_posicao_obstaculo(janela, largura_salao, altura_salao):
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
                 rodando = False
 
-        janela.fill(cores.PRETO)
-
         for y in range(altura_salao):
             for x in range(largura_salao):
-                cor = cores.VERMELHO if sala[y][x] else cores.AZUL
-                if cor == cores.AZUL:
+                cor = PRETO if sala[y][x] else AZUL
+                if cor == AZUL:
                     pygame.draw.rect(janela, cor,
                                      (x * tamanho_celula_obs, y * tamanho_celula_obs, tamanho_celula_obs,
                                       tamanho_celula_obs), 1)
@@ -302,8 +294,4 @@ def configurar_largura_altura():
     else:
         l, a = 10, 10
         return l, a
-
-
-# Função para configurar os obstáculos do salão de acordo com a escolha do usuário
-
 

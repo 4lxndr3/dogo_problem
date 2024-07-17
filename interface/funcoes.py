@@ -1,18 +1,23 @@
 import random
-from algoritmo import astar
-from recursos import cores
-from interface import telas
+from algoritmo.astar import a_star
+from recursos.cores import PRETO, VERMELHO, AZUL, BRANCO, minha_fonte
+from interface.telas import escolher_modo_obstaculo, escolher_posicao_obstaculo, imprimir_sem_saida
 import pygame
 
 def configurar_obstaculos(janela, largura_salao, altura_salao):
-    quantidade_obstaculos = 3
-    modo_obstaculo = telas.escolher_modo_obstaculo()
+    
+    min_obstaculos = 20
+    max_obstaculos = 50
+    quantidade_obstaculos = random.randint(min_obstaculos, max_obstaculos)
+    
+    modo_obstaculo = escolher_modo_obstaculo()
     if modo_obstaculo == 'automatico':
         obs = definir_obstaculos_aleatorios(largura_salao, altura_salao, quantidade_obstaculos)
     else:
-        obs = telas.escolher_posicao_obstaculo(janela, largura_salao, altura_salao)
+        obs = escolher_posicao_obstaculo(janela, largura_salao, altura_salao)
 
     return obs
+
 
 
 # Função para definir obstáculos aleatórios no grid do salão.
@@ -35,9 +40,9 @@ def definir_obstaculos_aleatorios(largura, altura, quantidade_obstaculos):
 # Função para encontrar e desenhar o caminho do início ao fim usando o algoritmo A*.
 def encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos,
                       VERMELHO_CLARO):
-    caminho = astar.a_star(salao, inicio, objetivo)
+    caminho = a_star(salao, inicio, objetivo)
     if not caminho:
-        telas.imprimir_sem_saida(janela)
+        imprimir_sem_saida(janela)
     if caminho:
         desenhar_caminho(janela, caminho, tamanho_celula)
     pintar_obstaculos_adjacentes(salao, obstaculos, VERMELHO_CLARO, janela, tamanho_celula)
@@ -59,11 +64,12 @@ def calcular_distancia_obstaculo(cachorro_x, cachorro_y, obstaculos):
 
 
 # Função para mostrar uma mensagem na tela.
-def mostrar_mensagem(mensagem, cor, posicao, janela):
-    fonte = pygame.font.Font(None, 36)  # Define a fonte e o tamanho do texto
-    texto = fonte.render(mensagem, True, cor)  # Renderiza o texto com a cor especificada
-    retangulo = texto.get_rect(center=posicao)  # Obtém o retângulo que contém o texto
-    janela.blit(texto, retangulo.topleft)  # Desenha o texto na tela
+def mostrar_mensagem(texto, cor, posicao, janela):
+    fonte = pygame.font.SysFont(None, 48)
+    mensagem = fonte.render(texto, True, cor)
+    rect = mensagem.get_rect(center=posicao)
+    janela.blit(mensagem, rect)
+
 
 
 # Função para pintar as zonas adjacentes a um obstaculo em uma cor diferente dele.
@@ -71,22 +77,18 @@ def pintar_obstaculos_adjacentes(salao, obstaculos, cor, janela, tamanho_celula)
     for y in range(salao.altura):
         for x in range(salao.largura):
             if obstaculos[y][x]:
-                for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1),
-                               (-1, -1), (0, -1), (-1, +1), (+1, -1), (+1, +1)]:
-                    new_x, new_y = x + dx, y + dy
-                    if 0 <= new_x < salao.largura and 0 <= new_y < salao.altura and not obstaculos[new_y][new_x]:
-                        pygame.draw.rect(janela, cor,
-                                         (new_x * tamanho_celula[0], new_y * tamanho_celula[1], tamanho_celula[0],
-                                          tamanho_celula[1]), 0)
-
+                pygame.draw.rect(janela, cor,
+                                 (x * tamanho_celula[0], y * tamanho_celula[1], tamanho_celula[0], tamanho_celula[1]))
 
 # Função para desenhar as células do grid.
-def desenhar_salao(janela, salao, tamanho_celula):
-    for y in range(salao.largura):
-        for x in range(salao.altura):
-            cor = cores.PRETO if salao.valido(x, y) else cores.VERMELHO
-            pygame.draw.rect(janela, cor,
-                             (x * tamanho_celula[0], y * tamanho_celula[1], tamanho_celula[0], tamanho_celula[1]), 0)
+def desenhar_salao(janela, salao, tamanho_celula, imagem_fundo):
+    janela.blit(imagem_fundo, (0, 0))
+    # Desenha as bordas do salão
+    for y in range(salao.altura):
+        for x in range(salao.largura):
+            pygame.draw.rect(janela, PRETO, (x * tamanho_celula[0], y * tamanho_celula[1], tamanho_celula[0], tamanho_celula[1]), 1)
+
+
 
 
 # Função para desenhar obstáculos no grid.
@@ -94,10 +96,9 @@ def desenhar_obstaculos(janela, salao, tamanho_celula):
     for y in range(salao.largura):
         for x in range(salao.altura):
             if salao.obstaculos[y][x]:
-                pygame.draw.rect(janela, cores.VERMELHO,
-                                 (x * tamanho_celula[0], y * tamanho_celula[1], tamanho_celula[0], tamanho_celula[1]),
-                                 0)
-
+                pygame.draw.rect(janela, PRETO,
+                                 (x * tamanho_celula[0] + 2,  y * tamanho_celula[1] + 2,
+                                  tamanho_celula[0] - 4, tamanho_celula[1] - 4), border_radius=5)
 
 # Função para desenhar a legenda no grid.
 def desenhar_legenda(largura_salao, altura_salao, janela, tamanho_celula, cor):
@@ -114,13 +115,13 @@ def desenhar_legenda(largura_salao, altura_salao, janela, tamanho_celula, cor):
 # Função para desenhar o caminho que o dogo faz no grid.
 def desenhar_caminho(janela, caminho, tamanho_celula):
     for estado in caminho:
-        pygame.draw.rect(janela, cores.AZUL,
+        pygame.draw.rect(janela, AZUL,
                          (estado.x * tamanho_celula[0], estado.y * tamanho_celula[1], tamanho_celula[0],
                           tamanho_celula[1]), 0)
 
 
 # Função para escrever os textos da legenda.
-def desenhar_texto(janela, texto, posicao, cor=cores.BRANCO, tamanho=20):
-    fonte = pygame.font.Font(cores.minha_fonte, tamanho)
+def desenhar_texto(janela, texto, posicao, cor=BRANCO, tamanho=20):
+    fonte = pygame.font.Font(minha_fonte, tamanho)
     superficie_texto = fonte.render(texto, True, cor)
     janela.blit(superficie_texto, posicao)
