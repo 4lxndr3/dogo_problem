@@ -5,6 +5,11 @@ import sys
 # Largura e altura da janela do pygame
 largura_janela, altura_janela = 800, 600
 
+# Cores
+VERDE = (34,139,34)
+VERMELHO = (178,34,34)
+
+
 def imprimir_sem_saida(janela):
     # Crie uma fonte para exibir o texto
     fonte = pygame.font.Font(minha_fonte, 36)
@@ -129,22 +134,34 @@ def escolher_modo_dimensao():
     pygame.display.set_caption("Escolha as Dimensões do Jogo")
     fonte = pygame.font.Font(minha_fonte, 24)
     cor_texto = pygame.Color(BRANCO)
-    texto_pergunta = fonte.render("Você quer escolher as dimensões do jogo? "
-                                  "(s/n)", True, cor_texto)
-    texto_rect = texto_pergunta.get_rect(center=(largura_janela // 2, altura_janela // 2))
+    texto_pergunta = fonte.render("Você quer escolher as dimensões do jogo? ", True, cor_texto)
+
+    texto_rect = texto_pergunta.get_rect(center=(largura_janela // 2, altura_janela // 2 - 50))
+
+    botao_sim = pygame.Rect(largura_janela // 2 - 100, altura_janela // 2, 80, 40)
+    botao_nao = pygame.Rect(largura_janela // 2 + 20, altura_janela // 2, 80, 40)
+
     while True:
         janela.fill(pygame.Color(PRETO))
         janela.blit(texto_pergunta, texto_rect)
+
+        pygame.draw.rect(janela, VERDE, botao_sim)
+        pygame.draw.rect(janela, VERMELHO, botao_nao)
+
+        texto_sim = fonte.render("Sim", True, cor_texto)
+        texto_nao = fonte.render("Não", True, cor_texto)
+        janela.blit(texto_sim, (botao_sim.x + 20, botao_sim.y + 10))
+        janela.blit(texto_nao, (botao_nao.x + 20, botao_nao.y + 10))
+
         pygame.display.flip()
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
-                rodando = False
                 sys.exit()
-            elif evento.type == pygame.KEYDOWN:
-                if evento.unicode.lower() == 's':
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if botao_sim.collidepoint(evento.pos):
                     return True
-                elif evento.unicode.lower() == 'n':
+                elif botao_nao.collidepoint(evento.pos):
                     return False
 
         pygame.display.flip()
