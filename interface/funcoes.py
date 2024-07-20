@@ -5,10 +5,7 @@ from interface.telas import escolher_modo_obstaculo, escolher_posicao_obstaculo,
 import pygame
 
 def configurar_obstaculos(janela, largura_salao, altura_salao):
-    
-    min_obstaculos = 1
-    max_obstaculos = 3
-    quantidade_obstaculos = random.randint(min_obstaculos, max_obstaculos)
+    quantidade_obstaculos = calcular_quantidade_obstaculos(largura_salao, altura_salao)
     
     modo_obstaculo = escolher_modo_obstaculo()
     if modo_obstaculo == 'automatico':
@@ -17,6 +14,13 @@ def configurar_obstaculos(janela, largura_salao, altura_salao):
         obs = escolher_posicao_obstaculo(janela, largura_salao, altura_salao)
 
     return obs
+
+def calcular_quantidade_obstaculos(largura, altura):
+    area = largura * altura
+    # Definindo a proporção de obstáculos em relação à área do salão
+    proporcao = 0.05  # 10% da área
+    quantidade_obstaculos = max(1, int(area * proporcao))
+    return quantidade_obstaculos
 
 
 
@@ -38,17 +42,20 @@ def definir_obstaculos_aleatorios(largura, altura, quantidade_obstaculos):
 
 
 # Função para encontrar e desenhar o caminho do início ao fim usando o algoritmo A*.
-def encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos,
-                      VERMELHO_CLARO):
+def encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos, VERMELHO_CLARO):
     caminho = a_star(salao, inicio, objetivo)
     if not caminho:
         imprimir_sem_saida(janela)
-    if caminho:
+    else:
         desenhar_caminho(janela, caminho, tamanho_celula)
     pintar_obstaculos_adjacentes(salao, obstaculos, VERMELHO_CLARO, janela, tamanho_celula)
     janela.blit(icone_cachorro, (inicio.x * tamanho_celula[0] + 5, inicio.y * tamanho_celula[1] + 5))
     janela.blit(icone_osso, (objetivo.x * tamanho_celula[0] + 5, objetivo.y * tamanho_celula[1] + 5))
+    return caminho
 
+def desenhar_caminho_parcial(janela, caminho, tamanho_celula, passo_atual, VERMELHO_CLARO):
+    for estado in caminho[:passo_atual]:
+        pygame.draw.rect(janela,  VERMELHO_CLARO, (estado.x * tamanho_celula[0], estado.y * tamanho_celula[1], tamanho_celula[0], tamanho_celula[1]))
 
 # Função para calcular se há um obstáculo adjacente à posição dada.
 # Retorna True se houver um obstáculo adjacente à posição do cachorro, senão False.

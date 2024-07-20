@@ -71,51 +71,34 @@ class FilaPrioridade:
 
 # Funçã que é pra encontrar o caminho no salão
 def a_star(salao, inicio, objetivo):
-    # Inicializa a fila de prioridade com o estado inicial
     agenda = FilaPrioridade()
     agenda.adicionar(0, inicio)
 
     estados_passados = set()
     custo_acumulado = {inicio: 0}
     caminho = {}
-
+    
     while not agenda.vazia():
-        # Obtém o próximo estado da fila de prioridade
         proximo_item = agenda.obter()
-
-        # Verifica se a fila está vazia
         if not proximo_item:
             break
 
         _, estado = proximo_item
 
-        # Verifica se o estado atual é o objetivo após a expansão dos vizinhos
         if estado.x == objetivo.x and estado.y == objetivo.y:
-            seguir_caminho = reconstruir_caminho(caminho, estado)
-            # Esvazia a fila após encontrar o caminho
-            agenda.delete()
-            return seguir_caminho
+            return reconstruir_caminho(caminho, estado)
 
-        # Explora os vizinhos do estado atual
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
             x, y = estado.x + dx, estado.y + dy
             proximo_estado = Estado(x, y)
 
-            # Verifica se o próximo estado é válido e ainda não foi visitado
             if salao.valido(x, y) and proximo_estado not in estados_passados:
-                # Calcula o novo custo acumulado
                 novo_custo = custo_acumulado[estado] + salao.custo_total(estado, proximo_estado)
-
-                # Verifica se o novo custo é menor do que o custo acumulado atual
                 if proximo_estado not in custo_acumulado or novo_custo < custo_acumulado[proximo_estado]:
-                    # Atualiza o custo acumulado e a prioridade na fila de prioridade
                     custo_acumulado[proximo_estado] = novo_custo
                     prioridade = novo_custo + salao.heuristica(proximo_estado, objetivo)
                     agenda.adicionar(prioridade, proximo_estado)
-
-                    # Adiciona o próximo estado aos estados visitados e atualiza o caminho
                     estados_passados.add(proximo_estado)
                     caminho[proximo_estado] = estado
-    # Esvazia a fila antes de retornar None se não foi possível encontrar um caminho
-    agenda.delete()
-    return None
+
+    return None  # Retorna None se não houver caminho

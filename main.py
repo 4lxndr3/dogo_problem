@@ -40,6 +40,11 @@ icone_osso = pygame.transform.scale(icone_osso, (tamanho_celula[0] - 20, tamanho
 # Modo automático do jogo onde o cachorro faz o caminho sozinho
 def modo_automatico():
     rodando = True
+    caminho = encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos, VERMELHO_CLARO)
+    caminho_iter = iter(caminho)  # Cria um iterador sobre o caminho
+    cachorro = next(caminho_iter)
+    passo_atual = 0;
+    
     while rodando:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -52,10 +57,27 @@ def modo_automatico():
         desenhar_salao(janela, salao, tamanho_celula, imagem_fundo)
         desenhar_obstaculos(janela, salao, tamanho_celula)
         pintar_obstaculos_adjacentes(salao, obstaculos, VERMELHO, janela, tamanho_celula)
-        encontrar_caminho(salao, inicio, objetivo, janela, tamanho_celula, icone_cachorro, icone_osso, obstaculos,
-                          VERMELHO_CLARO)
+        
+        try:
+            cachorro = next(caminho_iter)
+            passo_atual += 1
+        except StopIteration:
+            mostrar_mensagem("Good Job!", BRANCO, (largura // 2, altura // 2), janela)
+            mostrar_mensagem("Aperte Esc para sair", AZUL, (largura // 2, altura // 1.5), janela)
+            pygame.display.flip()
+            pygame.time.wait(2000)  # Aguarda um pouco para mostrar a mensagem
+            rodando = False
+            continue
+            
+        desenhar_caminho_parcial(janela, caminho, tamanho_celula, passo_atual, AZUL)
+        
+        janela.blit(icone_cachorro, (cachorro.x * tamanho_celula[0] + 10, cachorro.y * tamanho_celula[1] + 10))
+        janela.blit(icone_osso, (objetivo.x * tamanho_celula[0] + 10, objetivo.y * tamanho_celula[1] + 10))
         desenhar_legenda(largura_salao, altura_salao, janela, tamanho_celula, BRANCO)
+       
         pygame.display.flip()
+        pygame.time.wait(100)
+        
 
     pygame.quit()
 
