@@ -94,6 +94,7 @@ def obter_dimensoes_jogo():
     cor_texto = pygame.Color(BRANCO)
 
     while True:
+        janela.fill(pygame.Color(PRETO))
         texto_largura = fonte.render("Digite a dimensão da sala LxL: " + entrada_largura, True, cor_texto)
         texto_rect = texto_largura.get_rect(center=(largura_janela // 2, altura_janela // 2))
         janela.blit(texto_largura, texto_rect)
@@ -224,7 +225,7 @@ def criar_sala(largura, altura):
 # Função para escolher as posições dos obstáculos manualmente
 def escolher_posicao_obstaculo(janela, largura_salao, altura_salao):
     obstaculos = [[False for _ in range(largura_salao)] for _ in range(altura_salao)]
-    sala = criar_sala(largura_janela // 50, altura_janela // 50)
+    sala = criar_sala(800, 600)
     lista_obstaculos = []
     tamanho_celula_obs = 50
     pygame.display.set_caption("Definir Obstáculos")
@@ -249,7 +250,8 @@ def escolher_posicao_obstaculo(janela, largura_salao, altura_salao):
 
     x_texto3 = (largura_tela - largura_texto3) // 2
     y_texto3 = y_texto2 + altura_texto2 + 50
-    
+
+    janela.fill(PRETO)
     janela.blit(texto_tutorial1, (x_texto1, y_texto1))
     janela.blit(texto_tutorial2, (x_texto2, y_texto2))
     janela.blit(texto_tutorial3, (x_texto3, y_texto3))
@@ -278,6 +280,8 @@ def escolher_posicao_obstaculo(janela, largura_salao, altura_salao):
                     lista_obstaculos.remove((x, y))
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
                 rodando = False
+
+        janela.fill(PRETO)
 
         for y in range(altura_salao):
             for x in range(largura_salao):
