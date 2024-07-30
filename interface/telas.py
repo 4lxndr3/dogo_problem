@@ -97,7 +97,7 @@ def obter_dimensoes_jogo():
 
     while True:
         janela.fill(pygame.Color(PRETO))
-        texto_largura = fonte.render("Digite a dimensão da sala LxL de 0 - 20: " + entrada_largura, True, cor_texto)
+        texto_largura = fonte.render("Digite a dimensão da sala LxL de 3 - 20: " + entrada_largura, True, cor_texto)
         texto_rect = texto_largura.get_rect(center=(largura_janela // 2, altura_janela // 2))
         janela.blit(texto_largura, texto_rect)
 
