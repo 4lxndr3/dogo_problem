@@ -28,6 +28,8 @@ def imprimir_sem_saida(janela):
                 pygame.quit()
                 sys.exit()
 
+        janela.fill(PRETO)
+
         # Desenhe o texto no centro da janela
         janela.blit(texto, (x_texto, y_texto))
 
@@ -95,7 +97,7 @@ def obter_dimensoes_jogo():
 
     while True:
         janela.fill(pygame.Color(PRETO))
-        texto_largura = fonte.render("Digite a dimensão da sala LxL: " + entrada_largura, True, cor_texto)
+        texto_largura = fonte.render("Digite a dimensão da sala LxL de 0 - 20: " + entrada_largura, True, cor_texto)
         texto_rect = texto_largura.get_rect(center=(largura_janela // 2, altura_janela // 2))
         janela.blit(texto_largura, texto_rect)
 

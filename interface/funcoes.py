@@ -67,6 +67,7 @@ def calcular_distancia_obstaculo(cachorro_x, cachorro_y, obstaculos):
                 distancia_y = abs(cachorro_y - y)
                 if distancia_x <= 1 and distancia_y <= 1:
                     return True
+
     return False
 
 

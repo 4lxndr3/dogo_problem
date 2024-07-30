@@ -21,6 +21,7 @@ imagem_fundo = pygame.transform.scale(imagem_fundo, (largura, altura))
 # Configuração do tamanho do salão
 largura_salao, altura_salao = configurar_largura_altura()
 tamanho_celula = largura // largura_salao, altura // altura_salao
+tamanho_celula = (max(tamanho_celula[0], 20), max(tamanho_celula[1], 20))
 
 # Configuração dos obstáculos do salão
 obstaculos = configurar_obstaculos(janela, largura_salao, altura_salao)
