@@ -18,7 +18,7 @@ def configurar_obstaculos(janela, largura_salao, altura_salao):
 def calcular_quantidade_obstaculos(largura, altura):
     area = largura * altura
     # Definindo a proporção de obstáculos em relação à área do salão
-    proporcao = 0.05  # 10% da área
+    proporcao = 0.03  # 10% da área
     quantidade_obstaculos = max(1, int(area * proporcao))
     return quantidade_obstaculos
 
