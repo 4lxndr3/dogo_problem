@@ -14,7 +14,7 @@ class Estado:
         return self.x == other.x and self.y == other.y
 
     # Método para mover o dogo no modo manual
-    # calculo é feito para mover apenas uma celula do salao na direção desejada
+    # calculo é feito para mover apenas uma célula do salão na direção desejada
     def mover_para(self, destino):
         dx = destino.x - self.x
         dy = destino.y - self.y
@@ -48,6 +48,32 @@ class FilaPrioridade:
     # Adiciona um item à fila de prioridade com uma determinada prioridade
     def adicionar(self, prioridade, item):
         self.elementos.append((prioridade, item))
+        self._heapify_acima(len(self.elementos) - 1)
+
+    def _heapify_acima(self, indice):
+        while indice > 0:
+            indice_pai = (indice - 1) // 2
+            if self.elementos[indice][0] < self.elementos[indice_pai][0]:
+                self.elementos[indice], self.elementos[indice_pai] = self.elementos[indice_pai], self.elementos[indice]
+                indice = indice_pai
+            else:
+                break
+
+    def _heapify_abaixo(self, indice):
+        tamanho = len(self.elementos)
+        while True:
+            indice_esquerda = 2 * indice + 1
+            indice_direita = 2 * indice + 2
+            menor = indice
+            if indice_esquerda < tamanho and self.elementos[indice_esquerda][0] < self.elementos[menor][0]:
+                menor = indice_esquerda
+            if indice_direita < tamanho and self.elementos[indice_direita][0] < self.elementos[menor][0]:
+                menor = indice_direita
+            if menor != indice:
+                self.elementos[indice], self.elementos[menor] = self.elementos[menor], self.elementos[indice]
+                indice = menor
+            else:
+                break
 
     # Obtém o item com a maior prioridade da fila de prioridade
     def obter(self):
@@ -64,12 +90,18 @@ class FilaPrioridade:
 
         return self.elementos.pop(0) if self.elementos else None
 
-    # Esvazia a lista de elementos
-    def delete(self):
-        self.elementos = []
+    def aumentar_chave(self, indice, novo_valor):
+        if 0 <= indice < len(self.elementos):
+            self.elementos[indice] = novo_valor
+            self._heapify_acima(indice)
+
+    def remover_chave(self, indice):
+        if 0 <= indice < len(self.elementos):
+            self.aumentar_chave(indice, (float('inf'), self.elementos[indice][1]))
+            self.obter()
 
 
-# Funçã que é pra encontrar o caminho no salão
+# Função que é pra encontrar o caminho no salão
 def a_star(salao, inicio, objetivo):
     agenda = FilaPrioridade()
     agenda.adicionar(0, inicio)
